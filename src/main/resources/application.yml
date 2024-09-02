@@ -1,3 +1,9 @@
 spring:
   application:
     name: paypal-integration
+
+
+paypal:
+  client-id: client-id
+  client-secret: client-secret
+  mode: sandbox
