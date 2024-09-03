@@ -7,3 +7,7 @@ paypal:
   client-id: client-id
   client-secret: client-secret
   mode: sandbox
+
+
+server:
+  port: 9090
