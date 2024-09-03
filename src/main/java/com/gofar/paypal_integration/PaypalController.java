@@ -7,7 +7,9 @@ import com.paypal.base.rest.PayPalRESTException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.view.RedirectView;
@@ -19,17 +21,18 @@ public class PaypalController {
     private PaypalService paypalService;
 
     @GetMapping
-    public String home() {
+    public String home(Model model) {
+        model.addAttribute("paymentDto",  new PaymentDto());
         return "index";
     }
 
     @PostMapping("/payment/create")
-    public RedirectView createPayment() {
+    public RedirectView createPayment(@ModelAttribute("paymentDto") PaymentDto paymentDto) {
         try {
             String cancelUrl = "http://localhost:9090/payment/cancel";
             String successUrl = "http://localhost:9090/payment/success";
-            Payment payment = paypalService.createPayment(20.0, "Payment description",
-                    "Sale", "USD", "paypal", cancelUrl, successUrl);
+            Payment payment = paypalService.createPayment(paymentDto.getAmount(), paymentDto.getDescription(),
+                    "Sale", paymentDto.getCurrency(), paymentDto.getMethod(), cancelUrl, successUrl);
             for(Links links: payment.getLinks()) {
                 if (links.getRel().equals("approval_url")) {
                     return new RedirectView(links.getHref());
